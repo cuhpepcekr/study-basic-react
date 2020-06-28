@@ -1,31 +1,17 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-
-const initialPosts = [
-  {
-    id: 1,
-    title: "테스트제목1",
-    content: "테스트내용1",
-    writer: "테스트작성자1",
-  },
-  {
-    id: 2,
-    title: "테스트제목2",
-    content: "테스트내용2",
-    writer: "테스트작성자2",
-  },
-  {
-    id: 3,
-    title: "테스트제목3",
-    content: "테스트내용3",
-    writer: "테스트작성자3",
-  },
-];
+import axios from "axios";
 
 class Posts extends Component {
   constructor(props) {
     super(props);
-    this.state = { posts: initialPosts, selectedId: null };
+    this.state = { posts: null };
+  }
+
+  componentDidMount() {
+    axios.get(`http://localhost:8080/posts/`).then((response) => {
+      this.setState({ posts: response.data });
+    });
   }
 
   render() {
@@ -33,26 +19,30 @@ class Posts extends Component {
       <div>
         <h1>Posts</h1>
         <div>
-          <table>
-            <thead>
-              <tr>
-                <th>id</th>
-                <th>title</th>
-                <th>writer</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.posts.map((post) => (
-                <tr key={post.id}>
-                  <td>{post.id}</td>
-                  <td>
-                    <Link to={`/posts/${post.id}`}>{post.title}</Link>
-                  </td>
-                  <td>{post.writer}</td>
+          {this.state.posts ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>title</th>
+                  <th>writer</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {this.state.posts.map((post) => (
+                  <tr key={post.id}>
+                    <td>{post.id}</td>
+                    <td>
+                      <Link to={`/posts/${post.id}`}>{post.title}</Link>
+                    </td>
+                    <td>{post.user.name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <h3>Loading or Not Found</h3>
+          )}
         </div>
       </div>
     );
